@@ -5,7 +5,12 @@ const RecipeSchema = new Schema({
   name: String,
   image: String,
   instructions: String,
-  ingredients: [],
+  ingredients: [
+    {
+      ingredient: { type: Schema.Types.ObjectId, ref: "Ingredient" },
+      quantity: Number,
+    },
+  ],
 });
 
 module.exports = mongoose.model("Recipe", RecipeSchema);
