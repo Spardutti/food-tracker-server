@@ -7,6 +7,7 @@ const RecipeSchema = new Schema({
   instructions: String,
   ingredients: [
     {
+      _id: false,
       ingredient: { type: Schema.Types.ObjectId, ref: "Ingredient" },
       quantity: Number,
     },
