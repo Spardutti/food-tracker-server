@@ -10,32 +10,49 @@ const { body, validationResult } = require("express-validator");
 /* CREATE NEW USER */
 exports.newUser = async (req, res, next) => {
   try {
-    const { name } = req.body; //name ???
+    const { username } = req.body;
 
+    let usernameExist = await User.findOne({ username });
+    if (usernameExist) {
+      return res.status(500).json("Username already exists.");
+    }
     const user = new User({
-      username, // de donde sale username ??
+      username,
     });
 
-    //await user.save();
-
-    //no retorna nada..
+    await user.save();
+    res.json(user);
   } catch (err) {
     res.json(next(err));
   }
 };
 
-/* GET USERNAME BY USERNAME */
-exports.getUsername = async (req, res, next) => {
-  try {
-  } catch (err) {
-    res.json(next(err));
-  }
-};
-
-// GET
+/* GET USER BY USERNAME */
 
 /* ADD AN EXISTING RECIPE TO THE USER */
-// PUT
+exports.addRecipeUser = async (req, res, next) => {
+  const { name } = req.body;
+  try {
+    const newRecipe = {
+      recipe: {
+        name,
+      },
+    };
+
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { newRecipe },
+      },
+      { new: true }
+    );
+
+    res.json(user);
+  } catch (err) {
+    res.json(next(err));
+  }
+};
+// PATCH
 
 /* REMOVE A RECIPE FROM THE USER FAVORITES */
 // DELETE

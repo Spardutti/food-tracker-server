@@ -1,5 +1,4 @@
-var express = require("express");
-var router = express.Router();
+const router = require("express").Router();
 const recipeController = require("../Controllers/recipeController");
 
 /* CREATE NEW RECIPE */
