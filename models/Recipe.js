@@ -14,4 +14,6 @@ const RecipeSchema = new Schema({
   ],
 });
 
+//ADD RECIPE AUTHOR AND EDIT PERM.
+
 module.exports = mongoose.model("Recipe", RecipeSchema);
