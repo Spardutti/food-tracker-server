@@ -25,18 +25,17 @@ exports.newUser = async (req, res, next) => {
 
 /* ADD AN EXISTING RECIPE TO THE USER */
 exports.addRecipeUser = async (req, res, next) => {
-  const { name } = req.body; // name de nuevo ??
+  const { id } = req.body;
   try {
-    const newRecipe = {
-      recipe: {
-        name,
-      },
-    }; // esto no hace nada tienes que buscar el recipe por ID no crear uno nuevo
-
+    const recipe = await Recipe.findById(id);
+    let recipeExist = await User.findOne({ recipes: recipe });
+    if (recipeExist) {
+      return res.status(500).json("Recipe already added.");
+    }
     const user = await User.findByIdAndUpdate(
       req.params.id,
       {
-        $push: { newRecipe }, //push a donde ? user no es un array
+        $push: { recipes: recipe },
       },
       { new: true }
     );
@@ -46,9 +45,17 @@ exports.addRecipeUser = async (req, res, next) => {
     res.json(next(err));
   }
 };
-// PATCH
 
 /* REMOVE A RECIPE FROM THE USER FAVORITES */
+exports.deleteRecipeUser = async (req, res, next) => {
+  const { id } = req.body;
+  try {
+    const recipe = await Recipe.findById(id);
+  } catch (err) {
+    res.json(next(err));
+  }
+};
+
 // DELETE
 
 /* ADD INGREDIENTS TO THE USER FRIDGE */
