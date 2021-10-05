@@ -10,8 +10,10 @@ const RecipeSchema = new Schema({
       _id: false,
       ingredient: { type: Schema.Types.ObjectId, ref: "Ingredient" },
       quantity: Number,
+      //unit: String //gr, mm, etc
     },
   ],
+  //author: { type: Schema.Types.ObjectId, ref: "User" },
 });
 
 //ADD RECIPE AUTHOR AND EDIT PERM.
