@@ -3,10 +3,6 @@ const Recipe = require("../models/Recipe");
 const Ingredient = require("../models/Ingredient");
 const { body, validationResult } = require("express-validator");
 
-// CUANDO ACTUALIZAS UN ARRAY DE UN OBJECTO DE UNA BASE DE DATOS TIENES QUE PONER    user.markModified("fridge")
-// EJEMPLO PARA CUANDO ACTUALICES EL FRIDGE. USER SERIA EL NOMBRE QUE LE DAS AL USER CUANDO LO BUSQUES EN LA DB.
-// Y FRIDGE EL ARRAY QUE ESTAS MODIFICANDO.
-
 /* CREATE NEW USER */
 exports.newUser = async (req, res, next) => {
   try {
@@ -27,22 +23,20 @@ exports.newUser = async (req, res, next) => {
   }
 };
 
-/* GET USER BY USERNAME */
-
 /* ADD AN EXISTING RECIPE TO THE USER */
 exports.addRecipeUser = async (req, res, next) => {
-  const { name } = req.body;
+  const { name } = req.body; // name de nuevo ??
   try {
     const newRecipe = {
       recipe: {
         name,
       },
-    };
+    }; // esto no hace nada tienes que buscar el recipe por ID no crear uno nuevo
 
     const user = await User.findByIdAndUpdate(
       req.params.id,
       {
-        $push: { newRecipe },
+        $push: { newRecipe }, //push a donde ? user no es un array
       },
       { new: true }
     );
@@ -58,7 +52,7 @@ exports.addRecipeUser = async (req, res, next) => {
 // DELETE
 
 /* ADD INGREDIENTS TO THE USER FRIDGE */
-// PUT
+// PATCH
 
 /* REMOVE INGREDIENTS FROM THE USER FRIDGE */
 // DELETE
