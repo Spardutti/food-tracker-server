@@ -25,4 +25,10 @@ router.post("/ingredients/:id", recipeController.addIngredients);
 /* REMOVE INGREDIENT */
 router.delete("/ingredients/:id", recipeController.removeIngredient);
 
+/* LIKE RECIPE */
+router.patch("/like/:id", recipeController.likeRecipe);
+
+/* DISLIKE RECIPE */
+router.patch("/dislike/:id", recipeController.dislikeRecipe);
+
 module.exports = router;

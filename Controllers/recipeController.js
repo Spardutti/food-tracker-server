@@ -4,14 +4,28 @@ const Ingredient = require("../models/Ingredient");
 /* CREATES NEW RECIPE */
 exports.newRecipe = async (req, res, next) => {
   try {
-    const { name, instructions, image, qty, unit, ingredient, author } =
+    const { instructions, image, qty, unit, ingredient, author, rating } =
       req.body;
+    const name = req.body.name.toLowerCase();
+
+    const existingRecipe = await Recipe.findOne({ name });
+    if (existingRecipe)
+      return res
+        .status(500)
+        .json("A recipe with that name already exists, please try another");
 
     const recipe = new Recipe({
       name,
       instructions,
-      //qty, unit, ingredients, author ?
+      author,
       image,
+      rating,
+    });
+
+    recipe.ingredients.push({
+      ingredient,
+      quantity: qty,
+      unit,
     });
 
     await recipe.save();
@@ -79,10 +93,10 @@ exports.udpateRecipeName = async (req, res, next) => {
   }
 };
 
-/* UPDATES RECIPE INGREDIENTS */
+/* UPDATES RECIPE INGREDIENTS QTY UNIT */
 exports.updateRecipeIngredients = async (req, res, next) => {
   // UPDATE UNIT TOO
-  const { ingredientIndex, ingredientQty } = req.body;
+  const { ingredientIndex, ingredientQty, ingredientUnit } = req.body;
   try {
     const recipe = await Recipe.findById(req.params.id).populate(
       "ingredients.ingredient"
@@ -90,6 +104,8 @@ exports.updateRecipeIngredients = async (req, res, next) => {
     if (!recipe) return res.status(500).json("Recipe not found");
 
     let ingredientModified = recipe.ingredients[ingredientIndex];
+
+    ingredientModified.unit = ingredientUnit;
     ingredientModified.quantity = ingredientQty;
 
     recipe.markModified("ingredient");
@@ -136,6 +152,38 @@ exports.removeIngredient = async (req, res, next) => {
       },
       { new: true }
     ).populate("ingredients.ingredient");
+    res.json(recipe);
+  } catch (err) {
+    res.json(next(err));
+  }
+};
+
+/* LIKE THE RECIPE */
+exports.likeRecipe = async (req, res, next) => {
+  try {
+    const recipe = await Recipe.findByIdAndUpdate(
+      req.params.id,
+      {
+        $inc: { rating: 1 },
+      },
+      { new: true }
+    );
+    res.json(recipe);
+  } catch (err) {
+    res.json(next(err));
+  }
+};
+
+/* DISLIKE THE RECIPE */
+exports.dislikeRecipe = async (req, res, next) => {
+  try {
+    const recipe = await Recipe.findByIdAndUpdate(
+      req.params.id,
+      {
+        $inc: { rating: -1 },
+      },
+      { new: true }
+    );
     res.json(recipe);
   } catch (err) {
     res.json(next(err));
