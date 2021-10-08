@@ -1,10 +1,11 @@
 const Recipe = require("../models/Recipe");
 const Ingredient = require("../models/Ingredient");
+const { uploadFile, deleteFileFromS3 } = require("../s3");
 
 /* CREATES NEW RECIPE */
 exports.newRecipe = async (req, res, next) => {
   try {
-    const { instructions, image, qty, unit, ingredient, author, rating } =
+    const { instructions, image, ingredientId, qty, unit, author, rating } =
       req.body;
     const name = req.body.name.toLowerCase();
 
@@ -13,6 +14,10 @@ exports.newRecipe = async (req, res, next) => {
       return res
         .status(500)
         .json("A recipe with that name already exists, please try another");
+
+    const ingredient = await Ingredient.findById(ingredientId);
+
+    //const imageUrl = await uploadFile(req.file);
 
     const recipe = new Recipe({
       name,
@@ -25,6 +30,7 @@ exports.newRecipe = async (req, res, next) => {
     recipe.ingredients.push({
       ingredient,
       quantity: qty,
+      name: ingredient.name,
       unit,
     });
 
@@ -121,20 +127,32 @@ exports.updateRecipeIngredients = async (req, res, next) => {
 exports.addIngredients = async (req, res, next) => {
   const { ingredientName, ingredientQty } = req.body;
   try {
+    const ingredient = await Ingredient.findById(ingredientName);
+
     const newValues = {
       ingredient: ingredientName,
       quantity: ingredientQty,
+      name: ingredient.name,
     };
 
-    const recipe = await Recipe.findByIdAndUpdate(
-      req.params.id,
-      {
-        $addToSet: { ingredients: newValues },
-      },
-      { new: true }
-    ).populate("ingredients.ingredient");
+    Recipe.findById(req.params.id, async (err, recipe) => {
+      if (!recipe) return res.json("Recipe doest not exist");
+      const ingredientsArr = recipe.ingredients;
 
-    res.json(recipe);
+      if (ingredientsArr.length === 0) {
+        ingredientsArr.push(newValues);
+      } else {
+        for (let i = 0; i < ingredientsArr.length; i++) {
+          if (ingredientsArr[i].name === ingredient.name) {
+            return res.json(recipe);
+          }
+        }
+        ingredientsArr.push(newValues);
+      }
+      recipe.markModified("ingredients");
+      await recipe.save();
+      res.json(recipe);
+    });
   } catch (err) {
     res.json(next(err));
   }
