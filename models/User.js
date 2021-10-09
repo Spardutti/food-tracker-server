@@ -7,7 +7,9 @@ const UserSchema = new Schema({
   recipes: [{ type: Schema.Types.ObjectId, ref: "Recipe" }],
   fridge: [
     {
+      _id: false,
       ingredient: { type: Schema.Types.ObjectId, ref: "Ingredients" },
+      name: String,
       quantity: Number,
     },
   ],
