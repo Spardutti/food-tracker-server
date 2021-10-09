@@ -12,7 +12,8 @@ passport.use(
       const user = await User.findOne({ email: username });
       if (!user) return done(null, false);
 
-      bcrypt.compare(passowrd, user.password, (err, isMatch) => {
+      bcrypt.compare(password, user.password, (err, isMatch) => {
+        if (err) return err;
         if (isMatch) {
           // LOG IN
           return done(null, user);
