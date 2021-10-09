@@ -17,13 +17,14 @@ exports.newRecipe = async (req, res, next) => {
 
     const ingredient = await Ingredient.findById(ingredientId);
 
-    //const imageUrl = await uploadFile(req.file);
+    const imageUrl = await uploadFile(req.file);
+    console.log(imageUrl);
 
     const recipe = new Recipe({
       name,
       instructions,
       author,
-      image,
+      image: imageUrl.Location,
       rating,
     });
 
@@ -34,7 +35,7 @@ exports.newRecipe = async (req, res, next) => {
       unit,
     });
 
-    await recipe.save();
+    //await recipe.save();
     res.json(recipe);
   } catch (err) {
     res.json(next(err));
@@ -101,10 +102,24 @@ exports.udpateRecipeName = async (req, res, next) => {
 
 /* UPDATES RECIPE INGREDIENTS QTY UNIT */
 exports.updateRecipeIngredients = async (req, res, next) => {
-  // UPDATE UNIT TOO
   const { ingredientIndex, ingredientQty, ingredientUnit } = req.body;
+
   try {
-    const recipe = await Recipe.findById(req.params.id).populate(
+    Recipe.findById(req.params.id, async (err, recipe) => {
+      if (err) return res.json(err);
+      if (!recipe) return res.json("Recipe not found");
+
+      let ingredientModified = recipe.ingredients[ingredientIndex];
+
+      ingredientModified.unit = ingredientUnit;
+      ingredientModified.quantity = ingredientQty;
+
+      recipe.markModified("ingredients");
+      await recipe.save();
+
+      res.json(recipe);
+    });
+    /*     const recipe = await Recipe.findById(req.params.id).populate(
       "ingredients.ingredient"
     );
     if (!recipe) return res.status(500).json("Recipe not found");
@@ -117,7 +132,7 @@ exports.updateRecipeIngredients = async (req, res, next) => {
     recipe.markModified("ingredient");
     await recipe.save();
 
-    res.json(recipe);
+    res.json(recipe); */
   } catch (err) {
     res.json(next(err));
   }

@@ -1,8 +1,34 @@
 const router = require("express").Router();
 const recipeController = require("../Controllers/recipeController");
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  filename: (req, file, cb) => {
+    // THE IMAGE DEFAULT NAME
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 2000000 },
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype == "image/png" ||
+      file.mimetype == "image/jpg" ||
+      file.mimetype == "image/jpeg"
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      const err = new Error("Only .png, .jpg and .jpeg format allowed!");
+      err.name = "ExtensionError";
+      return cb(err);
+    }
+  },
+});
 
 /* CREATE NEW RECIPE */
-router.post("/new", recipeController.newRecipe);
+router.post("/new", upload.single("image"), recipeController.newRecipe);
 
 /* SEARCH RECIPE BY NAME */
 router.get("/recipes", recipeController.searchRecipes);
