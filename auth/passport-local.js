@@ -5,12 +5,12 @@ const bcrypt = require("bcryptjs");
 
 passport.use(
   new LocalStrategy(
-    {
+    /*     {
       usernameField: "email",
-    },
+    }, */
     async (username, password, done) => {
-      const user = await User.findOne({ email: username });
-      if (!user) return done(null, false);
+      const user = await User.findOne({ username });
+      if (!user) return done(null, false, { message: "Wrong username" });
 
       bcrypt.compare(password, user.password, (err, isMatch) => {
         if (err) return err;
@@ -18,7 +18,7 @@ passport.use(
           // LOG IN
           return done(null, user);
         } else {
-          return done(null, false);
+          return done(null, false, { message: "Wrong Password" });
         }
       });
     }

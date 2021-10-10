@@ -2,22 +2,62 @@ const User = require("../models/User");
 const Recipe = require("../models/Recipe");
 const Ingredient = require("../models/Ingredient");
 const { body, validationResult } = require("express-validator");
-const { findByIdAndUpdate } = require("../models/User");
+const passport = require("passport");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-/* CREATE NEW USER */
+/* CREATE NEW LOCAL USER */
 exports.newUser = async (req, res, next) => {
+  // NEEDS TO BE VALIDATED
   try {
-    const { username } = req.body;
+    const { username, password } = req.body;
 
     let usernameExist = await User.findOne({ username });
     if (usernameExist) {
       return res.status(500).json("Username already exists.");
     }
-    const user = new User({
-      username,
-    });
 
-    await user.save();
+    bcrypt.hash(password, 10, async (err, hash) => {
+      if (err) return next(err);
+
+      const user = new User({
+        username,
+        password: hash,
+      });
+
+      await user.save();
+      res.json(user);
+    });
+  } catch (err) {
+    res.json(next(err));
+  }
+};
+
+/* LOGIN LOCAL USER */
+exports.localLogin = async (req, res, next) => {
+  passport.authenticate("local", { session: false }, (err, user) => {
+    if (err) return next(err);
+    if (!user) return res.status(500).json("User does not exist");
+    else {
+      req.login(user, { sesion: false }, (err) => {
+        if (err) return next(err);
+        const token = jwt.sign(
+          user.toJSON(),
+          process.env.JWT_SECRET /* {
+          expiresIn: "20s",
+        } */
+        );
+        res.json({ token, user });
+      });
+    }
+  })(req, res, next);
+};
+
+/* GET USER */
+exports.getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.json("User not found");
     res.json(user);
   } catch (err) {
     res.json(next(err));
@@ -28,6 +68,7 @@ exports.newUser = async (req, res, next) => {
 exports.addRecipeUser = async (req, res, next) => {
   const { recipeID } = req.body;
   try {
+    // SI NO AGREGO NADA EN POSTMAN, AGREGA NULL. FIX THIS
     const recipe = await Recipe.findById(recipeID);
 
     const user = await User.findByIdAndUpdate(
@@ -66,6 +107,7 @@ exports.addIngredientFridge = async (req, res, next) => {
   try {
     const ingredient = await Ingredient.findById(ingredientId);
 
+    // UNIT ? gr, ml, etc
     const ingredientToAdd = {
       ingredient: ingredientName,
       quantity: ingredientQty,
@@ -73,6 +115,7 @@ exports.addIngredientFridge = async (req, res, next) => {
     };
 
     User.findById(req.params.id, async (err, user) => {
+      if (err) return next(err);
       if (!user) return res.json("User doesnt exist");
       const ingredientsArr = user.fridge;
 
@@ -100,12 +143,13 @@ exports.removeIngredientFridge = async (req, res, next) => {
   const { ingredientName } = req.body;
   try {
     User.findById(req.params.id, async (err, user) => {
+      if (err) return next(err);
+
       const ingredientsArr = user.fridge;
 
       for (let i = 0; i < ingredientsArr.length; i++) {
         if (ingredientsArr[i].name === ingredientName) {
           ingredientsArr.splice(i, 1);
-          console.log(ingredientsArr);
         }
       }
       user.markModified("ingredients");
@@ -122,6 +166,8 @@ exports.modifyIngredientCount = async (req, res, next) => {
   const { ingredientName, ingredientCount } = req.body;
   try {
     User.findById(req.params.id, async (err, user) => {
+      if (err) return next(err);
+
       const ingredientsArr = user.fridge;
 
       for (let i = 0; i < ingredientsArr.length; i++) {

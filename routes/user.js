@@ -1,8 +1,17 @@
 const router = require("express").Router();
 const userController = require("../Controllers/userController");
+const passport = require("passport");
+
+const jwtProtected = passport.authenticate("jwt", { session: false });
 
 /* CREATE NEW USER */
-router.post("/new", userController.newUser);
+router.post("/newLocalUser", userController.newUser);
+
+/* LOG IN LOCAL */
+router.post("/localLogin", userController.localLogin);
+
+/* GET USER */
+router.get("/getuser", jwtProtected, userController.getUser);
 
 /* ADD RECIPE USER */
 router.patch("/recipeadd/:id", userController.addRecipeUser);
