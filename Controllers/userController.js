@@ -7,31 +7,51 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 /* CREATE NEW LOCAL USER */
-exports.newUser = async (req, res, next) => {
-  // NEEDS TO BE VALIDATED
-  try {
-    const { username, password } = req.body;
+exports.newUser = [
+  body("username")
+    .notEmpty()
+    .withMessage("Por favor ingresa un nombre de usuario"),
+  body("password")
+    .isLength({ min: 5 })
+    .withMessage("La contraseña debe tener al menos 5 caracteres"),
+  body("confirm", "Las contraseñas deben coincidir")
+    .exists()
+    .custom((value, { req }) => value === req.body.password),
 
-    let usernameExist = await User.findOne({ username });
-    if (usernameExist) {
-      return res.status(500).json("Username already exists.");
-    }
+  async (req, res, next) => {
+    const validationErrors = validationResult(req);
 
-    bcrypt.hash(password, 10, async (err, hash) => {
-      if (err) return next(err);
+    try {
+      const { username, password } = req.body;
 
-      const user = new User({
-        username,
-        password: hash,
+      let usernameExist = await User.findOne({
+        username: new RegExp("^" + username + "$", "i"), //^start $end of string
       });
 
-      await user.save();
-      res.json(user);
-    });
-  } catch (err) {
-    res.json(next(err));
-  }
-};
+      if (usernameExist) {
+        validationErrors.errors.push({ msg: "El usuario ya existe" });
+      }
+
+      if (!validationErrors.isEmpty()) {
+        return res.status(500).json({ errors: validationErrors.array() });
+      }
+
+      bcrypt.hash(password, 10, async (err, hash) => {
+        if (err) return next(err);
+
+        const user = new User({
+          username,
+          password: hash,
+        });
+
+        await user.save();
+        res.json(user);
+      });
+    } catch (err) {
+      res.json(next(err));
+    }
+  },
+];
 
 /* LOGIN LOCAL USER */
 exports.localLogin = async (req, res, next) => {
