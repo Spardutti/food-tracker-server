@@ -13,11 +13,16 @@ const mongoose = require("mongoose");
 const { application } = require("express");
 require("dotenv").config();
 
+const passport = require("passport");
+
 const mongoDB = process.env.MONGO_URI;
 const db = mongoose.connection;
 
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 db.on("error", console.error.bind(console, "MongoDB connection error"));
+
+require("./auth/passport-local");
+require("./auth/jwt-auth");
 
 var app = express();
 
@@ -32,6 +37,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use(passport.initialize());
 
 app.use("/recipe", recipe);
 app.use("/ingredient", ingredient);
