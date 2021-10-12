@@ -14,7 +14,7 @@ router.post("/localLogin", userController.localLogin);
 router.get("/getuser", jwtProtected, userController.getUser);
 
 /* ADD RECIPE USER */
-router.patch("/recipeadd/:id", userController.addRecipeUser);
+router.patch("/recipeadd/:id", jwtProtected, userController.addRecipeUser);
 
 /* REMOVE RECIPE USER */
 router.patch("/recipedel/:id", userController.deleteRecipeUser);

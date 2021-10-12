@@ -11,6 +11,7 @@ const UserSchema = new Schema({
       ingredient: { type: Schema.Types.ObjectId, ref: "Ingredients" },
       name: String,
       quantity: Number,
+      unit: String,
     },
   ],
 });

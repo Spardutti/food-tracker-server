@@ -13,10 +13,7 @@ passport.use(
       if (!user) return done(null, false, { message: "Wrong username" });
 
       bcrypt.compare(password, user.password, (err, isMatch) => {
-<<<<<<< HEAD
-=======
         if (err) return err;
->>>>>>> 8064374c042ab3905179e1f79146dc5a73d9b9a1
         if (isMatch) {
           // LOG IN
           return done(null, user);

@@ -88,11 +88,20 @@ exports.getUser = async (req, res, next) => {
 exports.addRecipeUser = async (req, res, next) => {
   const { recipeID } = req.body;
   try {
-    // SI NO AGREGO NADA EN POSTMAN, AGREGA NULL. FIX THIS
-    const recipe = await Recipe.findById(recipeID);
+    let user = await User.findById(req.user._id);
+    if (!user) return res.json("User not found");
 
-    const user = await User.findByIdAndUpdate(
+    const recipe = await Recipe.findById(recipeID).populate(
+      "name",
+      "image",
+      "instructions",
+      "ingredients"
+    );
+    if (!recipe) return res.json("Recipe Doesn't exist.");
+
+    user = await User.findByIdAndUpdate(
       req.params.id,
+
       {
         $addToSet: { recipes: recipe },
       },
@@ -123,14 +132,14 @@ exports.deleteRecipeUser = async (req, res, next) => {
 
 /* ADD INGREDIENTS TO THE USER FRIDGE */
 exports.addIngredientFridge = async (req, res, next) => {
-  const { ingredientId, ingredientQty, ingredientName } = req.body;
+  const { ingredientId, ingredientQty, unit, ingredientName } = req.body;
   try {
     const ingredient = await Ingredient.findById(ingredientId);
 
-    // UNIT ? gr, ml, etc
     const ingredientToAdd = {
       ingredient: ingredientName,
       quantity: ingredientQty,
+      unit,
       name: ingredient.name,
     };
 
@@ -183,7 +192,7 @@ exports.removeIngredientFridge = async (req, res, next) => {
 
 /* MODIFY INGREDIENTS FRIDGE COUNT */
 exports.modifyIngredientCount = async (req, res, next) => {
-  const { ingredientName, ingredientCount } = req.body;
+  const { ingredientName, ingredientCount, unit } = req.body;
   try {
     User.findById(req.params.id, async (err, user) => {
       if (err) return next(err);
@@ -193,6 +202,7 @@ exports.modifyIngredientCount = async (req, res, next) => {
       for (let i = 0; i < ingredientsArr.length; i++) {
         if (ingredientsArr[i].name === ingredientName) {
           ingredientsArr[i].quantity += parseInt(ingredientCount);
+          ingredientsArr[i].unit = unit;
         }
       }
       user.markModified("ingredients");
