@@ -1,6 +1,9 @@
 const router = require("express").Router();
 const recipeController = require("../Controllers/recipeController");
 const multer = require("multer");
+const passport = require("passport");
+
+const jwtProtected = passport.authenticate("jwt", { session: false });
 
 const storage = multer.diskStorage({
   filename: (req, file, cb) => {
