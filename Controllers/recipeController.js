@@ -7,7 +7,6 @@ exports.newRecipe = async (req, res, next) => {
   try {
     const { instructions, ingredientId, qty, unit, author, rating } = req.body;
     const name = req.body.name.toLowerCase();
-
     const existingRecipe = await Recipe.findOne({ name });
     if (existingRecipe)
       return res
@@ -57,7 +56,9 @@ exports.getRecipe = async (req, res, next) => {
 exports.searchRecipes = async (req, res, next) => {
   const { name } = req.body;
   try {
-    const recipes = await Recipe.find({ name: new RegExp(name, "i") });
+    const recipes = await Recipe.find({
+      name: new RegExp("^" + name + "$", "i"),
+    });
 
     res.json(recipes);
   } catch (err) {

@@ -16,6 +16,12 @@ const RecipeSchema = new Schema({
   ],
   //author: { type: Schema.Types.ObjectId, ref: "User" },
   rating: Number,
+  dateCreated: {
+    type: Date,
+    default: new Date().toLocaleString("en-US", {
+      timeZone: "America/Montevideo",
+    }),
+  },
 });
 
 module.exports = mongoose.model("Recipe", RecipeSchema);
