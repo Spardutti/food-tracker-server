@@ -1,30 +1,17 @@
 const User = require("../models/User");
 const Recipe = require("../models/Recipe");
 const Ingredient = require("../models/Ingredient");
-const { body, validationResult } = require("express-validator");
 const passport = require("passport");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 /* CREATE NEW LOCAL USER */
 exports.newUser = [
-  body("username")
-    .notEmpty()
-    .withMessage("Por favor ingresa un nombre de usuario"),
-  body("password")
-    .isLength({ min: 5 })
-    .withMessage("La contraseña debe tener al menos 5 caracteres"),
-  body("confirm", "Las contraseñas deben coincidir")
-    .exists()
-    .custom((value, { req }) => value === req.body.password),
-
   async (req, res, next) => {
-    const validationErrors = validationResult(req);
-
     try {
       const { username, password } = req.body;
 
-      let usernameExist = await User.findOne({
+      /* let usernameExist = await User.findOne({
         username: new RegExp("^" + username + "$", "i"), //^start $end of string
       });
 
@@ -34,7 +21,7 @@ exports.newUser = [
 
       if (!validationErrors.isEmpty()) {
         return res.status(500).json({ errors: validationErrors.array() });
-      }
+      } */
 
       bcrypt.hash(password, 10, async (err, hash) => {
         if (err) return next(err);
