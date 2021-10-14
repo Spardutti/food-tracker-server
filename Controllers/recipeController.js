@@ -15,6 +15,7 @@ exports.newRecipe = async (req, res, next) => {
 
     const ingredient = await Ingredient.findById(ingredientId);
 
+    if (!req.file) return res.json("Please select and image");
     const imageUrl = await uploadFile(req.file);
 
     const recipe = new Recipe({
@@ -32,7 +33,7 @@ exports.newRecipe = async (req, res, next) => {
       unit,
     });
 
-    //await recipe.save();
+    await recipe.save();
     res.json(recipe);
   } catch (err) {
     res.json(next(err));
@@ -49,6 +50,17 @@ exports.getRecipe = async (req, res, next) => {
     res.json(recipe);
   } catch (err) {
     res.json(next(err));
+  }
+};
+
+/* SEARCH LATEST RECIPES */
+exports.latestRecipes = async (req, res, next) => {
+  try {
+    const recipes = await Recipe.find({}).sort({ dateCreated: -1 }).limit(3);
+    if (!recipes) return res.json("No recipes");
+    return res.json(recipes);
+  } catch (err) {
+    return res.json(next(err));
   }
 };
 

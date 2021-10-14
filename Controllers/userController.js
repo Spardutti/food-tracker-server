@@ -48,12 +48,9 @@ exports.localLogin = async (req, res, next) => {
     else {
       req.login(user, { sesion: false }, (err) => {
         if (err) return next(err);
-        const token = jwt.sign(
-          user.toJSON(),
-          process.env.JWT_SECRET /* {
-          expiresIn: "20s",
-        } */
-        );
+        const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
+          expiresIn: "24h",
+        });
         res.json({ token, user });
       });
     }

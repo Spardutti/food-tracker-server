@@ -37,6 +37,9 @@ router.post("/new", upload.single("image"), recipeController.newRecipe);
 /* SEARCH RECIPE BY NAME */
 router.get("/recipes", recipeController.searchRecipes);
 
+/* SEARCH NEW RECIPES */
+router.get("/latestRecipes", recipeController.latestRecipes);
+
 /* GET RECIPE */
 router.get("/:id", recipeController.getRecipe);
 
