@@ -11,18 +11,6 @@ exports.newUser = [
     try {
       const { username, password } = req.body;
 
-      /* let usernameExist = await User.findOne({
-        username: new RegExp("^" + username + "$", "i"), //^start $end of string
-      });
-
-      if (usernameExist) {
-        validationErrors.errors.push({ msg: "El usuario ya existe" });
-      }
-
-      if (!validationErrors.isEmpty()) {
-        return res.status(500).json({ errors: validationErrors.array() });
-      } */
-
       bcrypt.hash(password, 10, async (err, hash) => {
         if (err) return next(err);
 
@@ -44,7 +32,8 @@ exports.newUser = [
 exports.localLogin = async (req, res, next) => {
   passport.authenticate("local", { session: false }, (err, user) => {
     if (err) return next(err);
-    if (!user) return res.status(500).json("User does not exist");
+    if (!user)
+      return res.status(500).json("El usuario o contraseña es incorrecto.");
     else {
       req.login(user, { sesion: false }, (err) => {
         if (err) return next(err);

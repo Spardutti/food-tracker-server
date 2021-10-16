@@ -5,19 +5,17 @@ exports.validateNewUser = [
   body("username")
     .isLength({ min: 5 })
     .withMessage("El usuario debe tener al menos 5 caracteres")
-    .custom((value, { req }) => {
-      return new Promise((resolve, reject) => {
-        User.findOne({ username: req.body.username }, function (err, user) {
-          if (err) {
-            reject(new Error("Server Error"));
-          }
-          if (Boolean(user)) {
-            reject(new Error("Username already in use"));
-          }
-          resolve(true);
+    .custom(async (username) => {
+      try {
+        const user = await User.findOne({
+          username: new RegExp("^" + username + "$", "i"),
         });
-      });
-    }),
+        if (user) return Promise.reject();
+      } catch (error) {
+        throw error;
+      }
+    })
+    .withMessage("Usuario ya existe"),
   body("password")
     .isLength({ min: 5 })
     .withMessage("La contraseña debe tener al menos 5 caracteres"),
