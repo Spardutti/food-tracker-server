@@ -130,20 +130,6 @@ exports.updateRecipeIngredients = async (req, res, next) => {
 
       res.json(recipe);
     });
-    /*     const recipe = await Recipe.findById(req.params.id).populate(
-      "ingredients.ingredient"
-    );
-    if (!recipe) return res.status(500).json("Recipe not found");
-
-    let ingredientModified = recipe.ingredients[ingredientIndex];
-
-    ingredientModified.unit = ingredientUnit;
-    ingredientModified.quantity = ingredientQty;
-
-    recipe.markModified("ingredient");
-    await recipe.save();
-
-    res.json(recipe); */
   } catch (err) {
     res.json(next(err));
   }
@@ -195,7 +181,7 @@ exports.removeIngredient = async (req, res, next) => {
         $pull: { ingredients: { ingredient: ingredientId } },
       },
       { new: true }
-    ).populate("ingredients.ingredient");
+    );
     res.json(recipe);
   } catch (err) {
     res.json(next(err));
