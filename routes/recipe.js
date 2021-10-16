@@ -32,7 +32,14 @@ const upload = multer({
 });
 
 /* CREATE NEW RECIPE */
-router.post("/new", upload.single("image"), recipeController.newRecipe);
+router.post(
+  "/new",
+  jwtProtected,
+  upload.single("image"),
+  recipeController.newRecipe
+);
+
+/* GET */
 
 /* SEARCH RECIPE BY NAME */
 router.get("/recipes", recipeController.searchRecipes);
@@ -43,8 +50,15 @@ router.get("/latestRecipes", recipeController.latestRecipes);
 /* GET RECIPE */
 router.get("/:id", recipeController.getRecipe);
 
-/* REMOVE RECIPE */
-router.delete("/:id", recipeController.deleteRecipe);
+/* POST */
+
+/* ADD NEW INGREDIENT */
+router.post("/ingredients/:id", jwtProtected, recipeController.addIngredients);
+
+/* ADD NEW COMMENT */
+router.post("/newComment", jwtProtected, recipeController.newComment);
+
+/* PATCH */
 
 /* UPDATE  NAME*/
 router.patch("/name/:id", recipeController.udpateRecipeName);
@@ -52,16 +66,18 @@ router.patch("/name/:id", recipeController.udpateRecipeName);
 /* UPDATE INGREDIENTS */
 router.patch("/ingredients/:id", recipeController.updateRecipeIngredients);
 
-/* ADD NEW INGREDIENT */
-router.post("/ingredients/:id", recipeController.addIngredients);
+/* LIKE RECIPE */
+router.patch("/like/:id", jwtProtected, recipeController.likeRecipe);
+
+/* DISLIKE RECIPE */
+router.patch("/dislike/:id", jwtProtected, recipeController.dislikeRecipe);
+
+/* DELETE */
+
+/* REMOVE RECIPE */
+router.delete("/:id", recipeController.deleteRecipe);
 
 /* REMOVE INGREDIENT */
 router.delete("/ingredients/:id", recipeController.removeIngredient);
-
-/* LIKE RECIPE */
-router.patch("/like/:id", recipeController.likeRecipe);
-
-/* DISLIKE RECIPE */
-router.patch("/dislike/:id", recipeController.dislikeRecipe);
 
 module.exports = router;

@@ -27,7 +27,7 @@ const RecipeSchema = new Schema({
       _id: false,
       author: { type: Schema.Types.ObjectId, ref: "User" },
       text: String,
-      date: { type: Date, default: Date.now() },
+      dateCreated: { type: Date, defalt: Date.now() },
     },
   ],
 });
