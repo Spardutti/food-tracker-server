@@ -1,13 +1,13 @@
 const router = require("express").Router();
 const userController = require("../Controllers/userController");
 const passport = require("passport");
-const newUserValidation = require("../validation/newUserValidation");
+const userValidation = require("../validation/userValidation");
 const jwtProtected = passport.authenticate("jwt", { session: false });
 
 /* CREATE NEW USER */
 router.post(
   "/newLocalUser",
-  newUserValidation.validateNewUser,
+  userValidation.validateNewUser,
   userController.newUser
 );
 
