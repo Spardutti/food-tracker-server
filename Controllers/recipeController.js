@@ -43,9 +43,7 @@ exports.newRecipe = async (req, res, next) => {
 /* GET RECIPE */
 exports.getRecipe = async (req, res, next) => {
   try {
-    const recipe = await Recipe.findById(req.params.id).populate(
-      "ingredients.ingredient"
-    );
+    const recipe = await Recipe.findById(req.params.id);
 
     res.json(recipe);
   } catch (err) {
@@ -53,7 +51,7 @@ exports.getRecipe = async (req, res, next) => {
   }
 };
 
-/* SEARCH LATEST RECIPES */
+/* GET LATEST RECIPES */
 exports.latestRecipes = async (req, res, next) => {
   try {
     const recipes = await Recipe.find({}).sort({ dateCreated: -1 }).limit(3);
@@ -241,5 +239,41 @@ exports.newComment = async (req, res, next) => {
     res.json(recipe);
   } catch (error) {
     res.json(next(error));
+  }
+};
+
+/* EDIT COMMENT */
+exports.editComment = async (req, res, next) => {
+  try {
+    const { commentId, text } = req.body;
+    const recipe = await Recipe.findOneAndUpdate(
+      { _id: req.params.id, "comments._id": commentId },
+      {
+        $set: {
+          "comments.$.text": text,
+        },
+      },
+      { new: true }
+    );
+    res.json(recipe);
+  } catch (err) {
+    res.json(next(err));
+  }
+};
+
+/* DELETE COMMENT */
+exports.deleteComment = async (req, res, next) => {
+  try {
+    const { commentId } = req.body;
+    const recipe = await Recipe.findByIdAndUpdate(
+      req.params.id,
+      {
+        $pull: { comments: { _id: commentId } },
+      },
+      { new: true }
+    );
+    res.json(recipe);
+  } catch (err) {
+    res.json(next(err));
   }
 };

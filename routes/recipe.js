@@ -31,14 +31,6 @@ const upload = multer({
   },
 });
 
-/* CREATE NEW RECIPE */
-router.post(
-  "/new",
-  jwtProtected,
-  upload.single("image"),
-  recipeController.newRecipe
-);
-
 /* GET */
 
 /* SEARCH RECIPE BY NAME */
@@ -51,6 +43,14 @@ router.get("/latestRecipes", recipeController.latestRecipes);
 router.get("/:id", recipeController.getRecipe);
 
 /* POST */
+
+/* CREATE NEW RECIPE */
+router.post(
+  "/new",
+  jwtProtected,
+  upload.single("image"),
+  recipeController.newRecipe
+);
 
 /* ADD NEW INGREDIENT */
 router.post("/ingredients/:id", jwtProtected, recipeController.addIngredients);
@@ -72,6 +72,9 @@ router.patch("/like/:id", jwtProtected, recipeController.likeRecipe);
 /* DISLIKE RECIPE */
 router.patch("/dislike/:id", jwtProtected, recipeController.dislikeRecipe);
 
+/* EDIT COMMENT TEXT */
+router.patch("/comment/:id", recipeController.editComment);
+
 /* DELETE */
 
 /* REMOVE RECIPE */
@@ -79,5 +82,8 @@ router.delete("/:id", recipeController.deleteRecipe);
 
 /* REMOVE INGREDIENT */
 router.delete("/ingredients/:id", recipeController.removeIngredient);
+
+/* DELETE COMMENT */
+router.delete("/comment/:id", recipeController.deleteComment);
 
 module.exports = router;
