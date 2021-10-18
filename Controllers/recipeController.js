@@ -5,9 +5,11 @@ const { uploadFile, deleteFileFromS3 } = require("../s3");
 /* CREATES NEW RECIPE */
 exports.newRecipe = async (req, res, next) => {
   try {
-    const { instructions, ingredientId, qty, unit, author, rating } = req.body;
-    const name = req.body.name.toLowerCase();
-    const existingRecipe = await Recipe.findOne({ name });
+    const { instructions, ingredientId, qty, unit, name } = req.body;
+
+    const existingRecipe = await Recipe.findOne({
+      name: new RegExp("^" + name + "$", "i"),
+    });
     if (existingRecipe)
       return res
         .status(500)
@@ -21,15 +23,13 @@ exports.newRecipe = async (req, res, next) => {
     const recipe = new Recipe({
       name,
       instructions,
-      author,
+      author: req.user._id,
       image: imageUrl.Location,
-      rating,
     });
 
     recipe.ingredients.push({
-      ingredient,
+      ingredient: ingredient._id,
       quantity: qty,
-      name: ingredient.name,
       unit,
     });
 
@@ -43,9 +43,7 @@ exports.newRecipe = async (req, res, next) => {
 /* GET RECIPE */
 exports.getRecipe = async (req, res, next) => {
   try {
-    const recipe = await Recipe.findById(req.params.id).populate(
-      "ingredients.ingredient"
-    );
+    const recipe = await Recipe.findById(req.params.id);
 
     res.json(recipe);
   } catch (err) {
@@ -53,7 +51,7 @@ exports.getRecipe = async (req, res, next) => {
   }
 };
 
-/* SEARCH LATEST RECIPES */
+/* GET LATEST RECIPES */
 exports.latestRecipes = async (req, res, next) => {
   try {
     const recipes = await Recipe.find({}).sort({ dateCreated: -1 }).limit(3);
@@ -130,20 +128,6 @@ exports.updateRecipeIngredients = async (req, res, next) => {
 
       res.json(recipe);
     });
-    /*     const recipe = await Recipe.findById(req.params.id).populate(
-      "ingredients.ingredient"
-    );
-    if (!recipe) return res.status(500).json("Recipe not found");
-
-    let ingredientModified = recipe.ingredients[ingredientIndex];
-
-    ingredientModified.unit = ingredientUnit;
-    ingredientModified.quantity = ingredientQty;
-
-    recipe.markModified("ingredient");
-    await recipe.save();
-
-    res.json(recipe); */
   } catch (err) {
     res.json(next(err));
   }
@@ -195,7 +179,7 @@ exports.removeIngredient = async (req, res, next) => {
         $pull: { ingredients: { ingredient: ingredientId } },
       },
       { new: true }
-    ).populate("ingredients.ingredient");
+    );
     res.json(recipe);
   } catch (err) {
     res.json(next(err));
@@ -208,7 +192,7 @@ exports.likeRecipe = async (req, res, next) => {
     const recipe = await Recipe.findByIdAndUpdate(
       req.params.id,
       {
-        $inc: { rating: 1 },
+        $addToSet: { rating: req.user._id },
       },
       { new: true }
     );
@@ -224,7 +208,67 @@ exports.dislikeRecipe = async (req, res, next) => {
     const recipe = await Recipe.findByIdAndUpdate(
       req.params.id,
       {
-        $inc: { rating: -1 },
+        $pull: { rating: req.user._id },
+      },
+      { new: true }
+    );
+    res.json(recipe);
+  } catch (err) {
+    res.json(next(err));
+  }
+};
+
+/* ADD NEW COMMENT TO RECIPE */
+exports.newComment = async (req, res, next) => {
+  const { recipeId, text } = req.body;
+
+  try {
+    const recipe = await Recipe.findByIdAndUpdate(
+      recipeId,
+      {
+        $push: {
+          comments: {
+            author: req.user._id,
+            text,
+          },
+        },
+      },
+      { new: true }
+    );
+
+    res.json(recipe);
+  } catch (error) {
+    res.json(next(error));
+  }
+};
+
+/* EDIT COMMENT */
+exports.editComment = async (req, res, next) => {
+  try {
+    const { commentId, text } = req.body;
+    const recipe = await Recipe.findOneAndUpdate(
+      { _id: req.params.id, "comments._id": commentId },
+      {
+        $set: {
+          "comments.$.text": text,
+        },
+      },
+      { new: true }
+    );
+    res.json(recipe);
+  } catch (err) {
+    res.json(next(err));
+  }
+};
+
+/* DELETE COMMENT */
+exports.deleteComment = async (req, res, next) => {
+  try {
+    const { commentId } = req.body;
+    const recipe = await Recipe.findByIdAndUpdate(
+      req.params.id,
+      {
+        $pull: { comments: { _id: commentId } },
       },
       { new: true }
     );

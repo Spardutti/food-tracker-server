@@ -14,7 +14,6 @@ passport.use(
     (jwtpayload, done) => {
       User.findById(jwtpayload._id, (err, user) => {
         if (err) return next(err);
-        console.log(user);
         return done(null, user);
       });
     }

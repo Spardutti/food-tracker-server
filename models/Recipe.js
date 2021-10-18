@@ -14,14 +14,21 @@ const RecipeSchema = new Schema({
       unit: String, //gr, mm, etc
     },
   ],
-  //author: { type: Schema.Types.ObjectId, ref: "User" },
-  rating: Number,
+  author: { type: Schema.Types.ObjectId, ref: "User" },
+  rating: [{ type: Schema.Types.ObjectId, ref: "User" }],
   dateCreated: {
     type: Date,
     default: new Date().toLocaleString("en-US", {
       timeZone: "America/Montevideo",
     }),
   },
+  comments: [
+    {
+      author: { type: Schema.Types.ObjectId, ref: "User" },
+      text: String,
+      dateCreated: { type: Date, defalt: Date.now() },
+    },
+  ],
 });
 
 module.exports = mongoose.model("Recipe", RecipeSchema);

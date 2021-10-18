@@ -64,12 +64,7 @@ exports.addRecipeUser = async (req, res, next) => {
     let user = await User.findById(req.user._id);
     if (!user) return res.json("User not found");
 
-    const recipe = await Recipe.findById(recipeID).populate(
-      "name",
-      "image",
-      "instructions",
-      "ingredients"
-    );
+    const recipe = await Recipe.findById(recipeID);
     if (!recipe) return res.json("Recipe Doesn't exist.");
 
     user = await User.findByIdAndUpdate(
@@ -113,7 +108,6 @@ exports.addIngredientFridge = async (req, res, next) => {
       ingredient: ingredientName,
       quantity: ingredientQty,
       unit,
-      name: ingredient.name,
     };
 
     User.findById(req.params.id, async (err, user) => {
