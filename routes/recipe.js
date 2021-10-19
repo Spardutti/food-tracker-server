@@ -2,6 +2,7 @@ const router = require("express").Router();
 const recipeController = require("../Controllers/recipeController");
 const multer = require("multer");
 const passport = require("passport");
+const recipeValidation = require("../validation/recipeValidation");
 
 const jwtProtected = passport.authenticate("jwt", { session: false });
 
@@ -47,6 +48,7 @@ router.get("/:id", recipeController.getRecipe);
 /* CREATE NEW RECIPE */
 router.post(
   "/new",
+  recipeValidation.validateNewRecipe,
   jwtProtected,
   upload.single("image"),
   recipeController.newRecipe
