@@ -20,14 +20,15 @@ exports.validateNewRecipe = [
   body("instructions")
     .notEmpty()
     .withMessage("Por favor escriba las instrucciones."),
-  body("ingredient")
+  body("ingredientId")
     .notEmpty()
     .withMessage("Por favor elija al menos 1 ingrediente."),
-  body("quantity")
+  body("qty")
     .notEmpty()
     .withMessage("Por favor ingrese la cantidad.")
     .isNumeric()
     .withMessage("Por favor ingrese solo numeros."),
+  body("unit").notEmpty().withMessage("Por favor elija una unidad"),
   (req, res, next) => {
     const validationErrors = validationResult(req);
     if (!validationErrors.isEmpty())

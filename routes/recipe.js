@@ -48,9 +48,9 @@ router.get("/:id", recipeController.getRecipe);
 /* CREATE NEW RECIPE */
 router.post(
   "/new",
-  recipeValidation.validateNewRecipe,
   jwtProtected,
   upload.single("image"),
+  recipeValidation.validateNewRecipe,
   recipeController.newRecipe
 );
 
