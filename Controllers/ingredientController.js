@@ -14,7 +14,9 @@ exports.newIngredient = [
 
     try {
       const { name } = req.body;
-      const ingredientExist = await Ingredient.findOne({ name });
+      const ingredientExist = await Ingredient.findOne({
+        name: new RegExp("^" + name + "$", "i"),
+      });
 
       if (ingredientExist) {
         return res.status(500).json("Ingredient already exist");
