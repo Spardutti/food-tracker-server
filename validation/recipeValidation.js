@@ -39,4 +39,8 @@ exports.validateNewRecipe = [
   },
 ];
 
-exports.validateNewIngredient = [body("ingredient")];
+exports.validateNewIngredient = [
+  body("ingredientName")
+    .notEmpty()
+    .withMessage("Por favor elija un ingrediente"),
+];
