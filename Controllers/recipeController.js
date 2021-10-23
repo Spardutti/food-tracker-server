@@ -43,7 +43,9 @@ exports.newRecipe = async (req, res, next) => {
 /* GET RECIPE */
 exports.getRecipe = async (req, res, next) => {
   try {
-    const recipe = await Recipe.findById(req.params.id);
+    const recipe = await Recipe.findById(req.params.id).populate(
+      "ingredients.ingredient"
+    );
 
     res.json(recipe);
   } catch (err) {
