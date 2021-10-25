@@ -1,6 +1,7 @@
 const { body, validationResult } = require("express-validator");
 const Recipe = require("../models/Recipe");
 const User = require("../models/User");
+const Ingredient = require("../models/Ingredient");
 
 exports.validateNewRecipe = [
   body("name")
@@ -37,10 +38,4 @@ exports.validateNewRecipe = [
         .json({ validationErrors: validationErrors.array() });
     next();
   },
-];
-
-exports.validateNewIngredient = [
-  body("ingredientName")
-    .notEmpty()
-    .withMessage("Por favor elija un ingrediente"),
 ];
