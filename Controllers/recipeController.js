@@ -18,13 +18,13 @@ exports.newRecipe = async (req, res, next) => {
     const ingredient = await Ingredient.findById(ingredientId);
 
     ///if (!req.file) return res.json("Please select and image");
-    const imageUrl = await uploadFile(req.file);
+    //const imageUrl = await uploadFile(req.file);
 
     const recipe = new Recipe({
       name,
       instructions,
       author: req.user._id,
-      image: imageUrl.Location,
+      //image: imageUrl.Location,
     });
 
     recipe.ingredients.push({

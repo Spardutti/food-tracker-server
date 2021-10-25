@@ -83,7 +83,7 @@ router.patch("/comment/:id", recipeController.editComment);
 /* DELETE */
 
 /* REMOVE RECIPE */
-router.delete("/:id", recipeController.deleteRecipe);
+router.delete("/:id", jwtProtected, recipeController.deleteRecipe);
 
 /* REMOVE INGREDIENT */
 router.delete("/ingredients/:id", recipeController.removeIngredient);
