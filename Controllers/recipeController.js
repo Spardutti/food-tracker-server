@@ -53,6 +53,16 @@ exports.getRecipe = async (req, res, next) => {
   }
 };
 
+/* GET ALL RECIPES ARRAY INFO */
+exports.getAllRecipes = async (req, res, next) => {
+  try {
+    const recipes = await Recipe.find({});
+    return res.json(recipes);
+  } catch (err) {
+    return res.json(next(err));
+  }
+};
+
 /* GET LATEST RECIPES */
 exports.latestRecipes = async (req, res, next) => {
   try {

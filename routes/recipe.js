@@ -40,6 +40,9 @@ router.get("/recipes", recipeController.searchRecipes);
 /* SEARCH NEW RECIPES */
 router.get("/latestRecipes", recipeController.latestRecipes);
 
+/* GET ALL RECIPES ARRAY INFO */
+router.get("/allRecipes", recipeController.getAllRecipes);
+
 /* GET RECIPE */
 router.get("/:id", recipeController.getRecipe);
 
