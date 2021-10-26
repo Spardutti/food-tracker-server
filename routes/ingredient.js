@@ -9,4 +9,8 @@ router.post(
   ingredientValidation.validateNewIngredient,
   ingredientController.newIngredient
 );
+
+/* GET ALL INGREDIENTS ARRAY INFO */
+router.get("/allIngredients", ingredientController.getAllIngredients);
+
 module.exports = router;
