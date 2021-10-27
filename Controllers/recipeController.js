@@ -28,7 +28,8 @@ exports.newRecipe = async (req, res, next) => {
     });
 
     recipe.ingredients.push({
-      ingredient: ingredient._id,
+      ingredient: ingredient,
+      name: ingredient.name,
       quantity: qty,
       unit,
     });
@@ -147,14 +148,15 @@ exports.updateRecipeIngredients = async (req, res, next) => {
 
 /* ADD INGREDIENT TO RECIPE */
 exports.addIngredients = async (req, res, next) => {
-  const { ingredientName, ingredientQty } = req.body;
+  const { ingredientName, ingredientQty, ingredientUnit } = req.body;
   try {
     const ingredient = await Ingredient.findById(ingredientName);
 
     const newValues = {
-      ingredient: ingredientName,
+      ingredient,
       quantity: ingredientQty,
       name: ingredient.name,
+      unit: ingredientUnit,
     };
 
     Recipe.findById(req.params.id, async (err, recipe) => {
@@ -188,7 +190,7 @@ exports.removeIngredient = async (req, res, next) => {
     const recipe = await Recipe.findByIdAndUpdate(
       req.params.id,
       {
-        $pull: { ingredients: { ingredient: ingredientId } },
+        $pull: { ingredients: { _id: ingredientId } },
       },
       { new: true }
     );

@@ -7,7 +7,6 @@ const RecipeSchema = new Schema({
   instructions: String, //MAYBE IT SHOULD BE AN ARRAY TO BETTER ORGANIZE THE FRONTEND
   ingredients: [
     {
-      _id: false,
       ingredient: { type: Schema.Types.ObjectId, ref: "Ingredient" },
       name: String,
       quantity: Number,
