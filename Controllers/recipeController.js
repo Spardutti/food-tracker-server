@@ -5,7 +5,7 @@ const { uploadFile, deleteFileFromS3 } = require("../s3");
 /* CREATES NEW RECIPE */
 exports.newRecipe = async (req, res, next) => {
   try {
-    const { instructions, ingredientId, qty, unit, name } = req.body;
+    const { instructions, ingredientId, name, ingredients } = req.body;
 
     /*     const existingRecipe = await Recipe.findOne({
       name: new RegExp("^" + name + "$", "i"),
@@ -24,13 +24,8 @@ exports.newRecipe = async (req, res, next) => {
       name,
       instructions,
       author: req.user._id,
+      ingredients,
       //image: imageUrl.Location,
-    });
-
-    recipe.ingredients.push({
-      ingredient: ingredient._id,
-      quantity: qty,
-      unit,
     });
 
     await recipe.save();

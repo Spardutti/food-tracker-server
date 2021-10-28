@@ -8,7 +8,7 @@ const RecipeSchema = new Schema({
   ingredients: [
     {
       _id: false,
-      ingredient: { type: Schema.Types.ObjectId, ref: "Ingredient" },
+      ingredientId: String,
       name: String,
       quantity: Number,
       unit: String, //gr, mm, etc
