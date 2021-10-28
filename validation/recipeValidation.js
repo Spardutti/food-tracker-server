@@ -21,7 +21,7 @@ exports.validateNewRecipe = [
   body("instructions")
     .notEmpty()
     .withMessage("Por favor escriba las instrucciones."),
-  body("ingredientId")
+  /*   body("ingredientId")
     .notEmpty()
     .withMessage("Por favor elija al menos 1 ingrediente."),
   body("qty")
@@ -30,7 +30,7 @@ exports.validateNewRecipe = [
     .isNumeric()
     .withMessage("Por favor ingrese solo numeros."),
   body("unit").notEmpty().withMessage("Por favor elija una unidad"),
-  (req, res, next) => {
+ */ (req, res, next) => {
     const validationErrors = validationResult(req);
     if (!validationErrors.isEmpty())
       return res

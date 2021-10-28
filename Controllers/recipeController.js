@@ -5,7 +5,7 @@ const { uploadFile, deleteFileFromS3 } = require("../s3");
 /* CREATES NEW RECIPE */
 exports.newRecipe = async (req, res, next) => {
   try {
-    const { instructions, ingredientId, qty, unit, name } = req.body;
+    const { instructions, ingredientId, name, ingredients } = req.body;
 
     /*     const existingRecipe = await Recipe.findOne({
       name: new RegExp("^" + name + "$", "i"),
@@ -15,8 +15,6 @@ exports.newRecipe = async (req, res, next) => {
         .status(500)
         .json("A recipe with that name already exists, please try another");*/
 
-    const ingredient = await Ingredient.findById(ingredientId);
-
     ///if (!req.file) return res.json("Please select and image");
     //const imageUrl = await uploadFile(req.file);
 
@@ -24,14 +22,8 @@ exports.newRecipe = async (req, res, next) => {
       name,
       instructions,
       author: req.user._id,
+      ingredients,
       //image: imageUrl.Location,
-    });
-
-    recipe.ingredients.push({
-      ingredient: ingredient,
-      name: ingredient.name,
-      quantity: qty,
-      unit,
     });
 
     await recipe.save();
@@ -44,9 +36,7 @@ exports.newRecipe = async (req, res, next) => {
 /* GET RECIPE */
 exports.getRecipe = async (req, res, next) => {
   try {
-    const recipe = await Recipe.findById(req.params.id)
-      .populate("ingredients.ingredient")
-      .populate("author");
+    const recipe = await Recipe.findById(req.params.id).populate("author");
 
     res.json(recipe);
   } catch (err) {
@@ -148,15 +138,13 @@ exports.updateRecipeIngredients = async (req, res, next) => {
 
 /* ADD INGREDIENT TO RECIPE */
 exports.addIngredients = async (req, res, next) => {
-  const { ingredientName, ingredientQty, ingredientUnit } = req.body;
+  const { ingredientId, name, quantity, unit } = req.body;
   try {
-    const ingredient = await Ingredient.findById(ingredientName);
-
     const newValues = {
-      ingredient,
-      quantity: ingredientQty,
-      name: ingredient.name,
-      unit: ingredientUnit,
+      ingredientId,
+      name,
+      quantity,
+      unit,
     };
 
     Recipe.findById(req.params.id, async (err, recipe) => {
@@ -167,7 +155,7 @@ exports.addIngredients = async (req, res, next) => {
         ingredientsArr.push(newValues);
       } else {
         for (let i = 0; i < ingredientsArr.length; i++) {
-          if (ingredientsArr[i].name === ingredient.name) {
+          if (ingredientsArr[i].ingredientId === ingredientId) {
             return res.json(recipe);
           }
         }
@@ -190,7 +178,7 @@ exports.removeIngredient = async (req, res, next) => {
     const recipe = await Recipe.findByIdAndUpdate(
       req.params.id,
       {
-        $pull: { ingredients: { _id: ingredientId } },
+        $pull: { ingredients: { ingredientId } },
       },
       { new: true }
     );
