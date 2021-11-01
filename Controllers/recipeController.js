@@ -97,6 +97,12 @@ exports.udpateRecipeName = async (req, res, next) => {
     const newName = {
       name,
     };
+    const recipeName = await Recipe.findOne({
+      name: new RegExp("^" + name + "$", "i"),
+    });
+    if (recipeName) {
+      return res.status(500).json("Recipe already exist");
+    }
 
     const recipe = await Recipe.findByIdAndUpdate(
       req.params.id,
