@@ -7,14 +7,6 @@ exports.newRecipe = async (req, res, next) => {
   try {
     const { instructions, ingredientId, name, ingredients } = req.body;
 
-    /*     const existingRecipe = await Recipe.findOne({
-      name: new RegExp("^" + name + "$", "i"),
-    });
-    if (existingRecipe)
-      return res
-        .status(500)
-        .json("A recipe with that name already exists, please try another");*/
-
     ///if (!req.file) return res.json("Please select and image");
     //const imageUrl = await uploadFile(req.file);
 
@@ -237,6 +229,7 @@ exports.newComment = async (req, res, next) => {
         $push: {
           comments: {
             author: req.user._id,
+            username: req.user.username,
             text,
           },
         },

@@ -25,8 +25,14 @@ const RecipeSchema = new Schema({
   comments: [
     {
       author: { type: Schema.Types.ObjectId, ref: "User" },
+      username: String,
       text: String,
-      dateCreated: { type: Date, defalt: Date.now() },
+      dateCreated: {
+        type: Date,
+        default: new Date().toLocaleString("en-US", {
+          timeZone: "America/Montevideo",
+        }),
+      },
     },
   ],
 });
