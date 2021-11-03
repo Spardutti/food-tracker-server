@@ -1,6 +1,7 @@
 const Recipe = require("../models/Recipe");
 const Ingredient = require("../models/Ingredient");
 const { uploadFile, deleteFileFromS3 } = require("../s3");
+const { find } = require("../models/Recipe");
 
 /* CREATES NEW RECIPE */
 exports.newRecipe = async (req, res, next) => {
@@ -68,6 +69,16 @@ exports.searchRecipes = async (req, res, next) => {
     res.json(recipes);
   } catch (err) {
     res.json(next(err));
+  }
+};
+
+/* GET RECIPE BY AUTHOR */
+exports.getRecipeByAuthor = async (req, res, next) => {
+  try {
+    const recipes = await Recipe.find({ author: req.user._id });
+    res.json(recipes);
+  } catch (err) {
+    return res.json(next(err));
   }
 };
 
