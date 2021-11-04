@@ -24,7 +24,11 @@ router.patch("/recipeadd/:id", jwtProtected, userController.addRecipeUser);
 router.patch("/recipedel/:id", userController.deleteRecipeUser);
 
 /* ADD INGREDIENT FRIDGE */
-router.patch("/ingredientadd", userController.addIngredientFridge);
+router.patch(
+  "/ingredientadd",
+  jwtProtected,
+  userController.addIngredientFridge
+);
 
 /* DELETE INGREDIENT FRIDGE */
 router.patch("/ingredientdel/:id", userController.removeIngredientFridge);

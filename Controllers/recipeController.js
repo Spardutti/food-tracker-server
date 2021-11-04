@@ -172,7 +172,7 @@ exports.addIngredients = async (req, res, next) => {
       }
       recipe.markModified("ingredients");
       await recipe.save();
-      res.json(recipe);
+      res.json(recipe.ingredients);
     });
   } catch (err) {
     res.json(next(err));

@@ -105,7 +105,7 @@ exports.addIngredientFridge = async (req, res, next) => {
     const ingredient = await Ingredient.findById(ingredientId);
 
     const ingredientToAdd = {
-      ingredient: ingredientId,
+      ingredientId,
       name: ingredientName,
       quantity: ingredientQty,
       unit,
@@ -128,7 +128,7 @@ exports.addIngredientFridge = async (req, res, next) => {
       }
       user.markModified("ingredients");
       await user.save();
-      res.json(user);
+      res.json(user.fridge);
     });
   } catch (err) {
     res.json(next(err));
