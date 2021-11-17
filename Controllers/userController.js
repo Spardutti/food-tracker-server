@@ -105,12 +105,13 @@ exports.addIngredientFridge = async (req, res, next) => {
     const ingredient = await Ingredient.findById(ingredientId);
 
     const ingredientToAdd = {
-      ingredient: ingredientName,
+      ingredientId,
+      name: ingredientName,
       quantity: ingredientQty,
       unit,
     };
 
-    User.findById(req.params.id, async (err, user) => {
+    User.findById(req.user._id, async (err, user) => {
       if (err) return next(err);
       if (!user) return res.json("User doesnt exist");
       const ingredientsArr = user.fridge;
@@ -127,7 +128,7 @@ exports.addIngredientFridge = async (req, res, next) => {
       }
       user.markModified("ingredients");
       await user.save();
-      res.json(user);
+      res.json(user.fridge);
     });
   } catch (err) {
     res.json(next(err));

@@ -8,7 +8,7 @@ const RecipeSchema = new Schema({
   ingredients: [
     {
       _id: false,
-      ingredient: { type: Schema.Types.ObjectId, ref: "Ingredient" },
+      ingredientId: String,
       name: String,
       quantity: Number,
       unit: String, //gr, mm, etc
@@ -25,8 +25,14 @@ const RecipeSchema = new Schema({
   comments: [
     {
       author: { type: Schema.Types.ObjectId, ref: "User" },
+      username: String,
       text: String,
-      dateCreated: { type: Date, defalt: Date.now() },
+      dateCreated: {
+        type: Date,
+        default: new Date().toLocaleString("en-US", {
+          timeZone: "America/Montevideo",
+        }),
+      },
     },
   ],
 });

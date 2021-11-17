@@ -40,6 +40,12 @@ router.get("/recipes", recipeController.searchRecipes);
 /* SEARCH NEW RECIPES */
 router.get("/latestRecipes", recipeController.latestRecipes);
 
+/* GET ALL RECIPES ARRAY INFO */
+router.get("/allRecipes", recipeController.getAllRecipes);
+
+/* GET RECIPES BY AUTHOR */
+router.get("/author", jwtProtected, recipeController.getRecipeByAuthor);
+
 /* GET RECIPE */
 router.get("/:id", recipeController.getRecipe);
 
@@ -80,7 +86,7 @@ router.patch("/comment/:id", recipeController.editComment);
 /* DELETE */
 
 /* REMOVE RECIPE */
-router.delete("/:id", recipeController.deleteRecipe);
+router.delete("/:id", jwtProtected, recipeController.deleteRecipe);
 
 /* REMOVE INGREDIENT */
 router.delete("/ingredients/:id", recipeController.removeIngredient);

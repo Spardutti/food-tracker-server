@@ -8,7 +8,8 @@ const UserSchema = new Schema({
   fridge: [
     {
       _id: false,
-      ingredient: { type: Schema.Types.ObjectId, ref: "Ingredients" },
+      ingredientId: { type: Schema.Types.ObjectId, ref: "Ingredients" },
+      name: String,
       quantity: Number,
       unit: String,
     },
